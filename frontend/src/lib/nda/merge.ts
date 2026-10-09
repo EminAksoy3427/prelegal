@@ -22,6 +22,17 @@ function normalizeLineEndings(text: string): string {
   return text.replace(/\r\n/g, "\n");
 }
 
+/**
+ * Drops the Common Paper authoring hints (`<label>...</label>`) from the template.
+ * They're guidance for whoever fills in the Cover Page by hand; this app already
+ * surfaces the same guidance in its own form UI, and react-markdown renders raw
+ * HTML as escaped literal text rather than stripping it, so left in place they'd
+ * leak into the document as visible `<label>...</label>` text.
+ */
+function stripAuthoringLabels(text: string): string {
+  return text.replace(/[ \t]*<label>.*?<\/label>/g, "");
+}
+
 /** Replaces the first literal occurrence of `search` without `$`-pattern expansion. */
 function safeReplace(text: string, search: string, value: string): string {
   const index = text.indexOf(search);
@@ -58,7 +69,7 @@ export function describeConfidentialityTerm(data: NdaFormData): string {
 
 /** Fills the Cover Page template with the form data, keeping its markdown structure. */
 export function fillCoverPage(raw: string, data: NdaFormData): string {
-  let text = normalizeLineEndings(raw);
+  let text = stripAuthoringLabels(normalizeLineEndings(raw));
 
   text = safeReplace(text, PURPOSE_PLACEHOLDER, data.purpose || PURPOSE_PLACEHOLDER);
   text = safeReplace(

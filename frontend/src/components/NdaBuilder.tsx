@@ -21,8 +21,10 @@ export default function NdaBuilder({
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
   // Defaults "today" on the client only, since this value must not be baked
-  // into the prerendered static shell.
+  // into the prerendered static shell. Computing it during render instead
+  // would also desync from the build-time static shell on hydration.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setData((prev) =>
       prev.effectiveDate
         ? prev
@@ -78,13 +80,17 @@ export default function NdaBuilder({
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="purpose"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Purpose
               <span className="block text-xs font-normal text-gray-500">
                 How Confidential Information may be used
               </span>
             </label>
             <textarea
+              id="purpose"
               value={data.purpose}
               onChange={(e) => update("purpose", e.target.value)}
               rows={3}
@@ -93,10 +99,14 @@ export default function NdaBuilder({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="effectiveDate"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Effective Date
             </label>
             <input
+              id="effectiveDate"
               type="date"
               value={data.effectiveDate}
               onChange={(e) => update("effectiveDate", e.target.value)}
@@ -123,6 +133,7 @@ export default function NdaBuilder({
                 <input
                   type="number"
                   min={1}
+                  aria-label="MNDA term length in years"
                   value={data.mndaTermYears}
                   onChange={(e) =>
                     update("mndaTermYears", Number(e.target.value) || 1)
@@ -162,6 +173,7 @@ export default function NdaBuilder({
                 <input
                   type="number"
                   min={1}
+                  aria-label="Term of confidentiality length in years"
                   value={data.confidentialityTermYears}
                   onChange={(e) =>
                     update(
@@ -188,10 +200,14 @@ export default function NdaBuilder({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="governingLaw"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Governing Law
               </label>
               <input
+                id="governingLaw"
                 type="text"
                 placeholder="e.g. Delaware"
                 value={data.governingLaw}
@@ -200,10 +216,14 @@ export default function NdaBuilder({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="jurisdiction"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Jurisdiction
               </label>
               <input
+                id="jurisdiction"
                 type="text"
                 placeholder="e.g. courts located in New Castle, DE"
                 value={data.jurisdiction}
@@ -246,7 +266,21 @@ export default function NdaBuilder({
             Preview
           </h2>
           <article className="prose prose-sm max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                // GFM task-list checkboxes here are read-only status markers
+                // ("- [x] Expires...") whose containing text already states
+                // the same fact in prose, so they're decorative, not inputs.
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructured only to exclude the AST node from the spread onto a DOM <input>
+                input: ({ node: _node, ...props }) =>
+                  props.type === "checkbox" ? (
+                    <input {...props} aria-hidden="true" />
+                  ) : (
+                    <input {...props} />
+                  ),
+              }}
+            >
               {mergedMarkdown}
             </ReactMarkdown>
           </article>
