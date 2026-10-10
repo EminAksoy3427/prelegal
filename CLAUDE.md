@@ -26,8 +26,8 @@ Roadmap (Jira project `PL`):
 | ------ | ----------------------------------------------- | ----- |
 | PL-2   | Dataset of legal document templates             | Done (PR #3 merged) |
 | PL-3   | Prototype of Mutual NDA creator                 | Done (PR #4 merged), plus an accessibility/rendering fix commit |
-| PL-4   | Build foundation of V1 product                  | Implemented on `feature/pl-4-v1-foundation`, **PR #5 open** (Jira still "To Do") |
-| PL-5   | Add AI chat, but still just Mutual NDA          | Not started |
+| PL-4   | Build foundation of V1 product                  | Done (PR #5 merged) |
+| PL-5   | Add AI chat, but still just Mutual NDA          | Not started (next up) |
 | PL-6   | Expand to all supported legal document types    | Not started |
 | PL-7   | Support multiple users & final polish           | Not started |
 
@@ -126,6 +126,11 @@ When instructed to build a feature:
    fix any issues.
 4. Submit a PR using the GitHub tools (repo `EminAksoy3427/prelegal`, base
    `main`, branch `feature/pl-<n>-<short-name>`).
+5. When asked to merge: the GitHub MCP token can't merge PRs (403), so merge
+   locally with `git merge --no-ff` using the message
+   `Merge pull request #<n> from EminAksoy3427/<branch>` and push `main`.
+   GitHub then marks the PR as merged. Move the Jira ticket to Done (the
+   transition is named "Tamamlandı", id 31) and update "Current status" above.
 
 ## AI design
 
