@@ -102,3 +102,7 @@ logs/
 # ---- Misc ----
 .cache/
 .parcel-cache/
+
+# ---- Claude Code ----
+# Personal, machine-specific overrides (shared settings live in .claude/settings.json)
+.claude/settings.local.json

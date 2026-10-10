@@ -1,0 +1,19 @@
+[project]
+name = "prelegal-backend"
+version = "0.1.0"
+description = "Prelegal API server: serves the API and the statically exported frontend."
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+]
+
+[dependency-groups]
+dev = [
+    "httpx2>=2.13",
+    "pytest>=8",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
